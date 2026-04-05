@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CardioPredict AI | Diagnostic Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Minimal Navbar -->
+    <nav>
+        <div class="nav-brand">
+            <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3-9L9 21l-3-9H2"/></svg>
+            CardioPredict AI
+        </div>
+        <div class="nav-links">
+            <a href="/" style="font-size: 18px;">← Return to Terminal</a>
+        </div>
+    </nav>
+
+    <div class="result-container">
+        <div class="result-card {% if risk_class == 1 %}high-risk{% else %}low-risk{% endif %} fade-in-up">
+            <h2>{% if risk_class == 1 %}HIGH RISK DETECTED{% else %}STABLE PROFILE{% endif %}</h2>
+            {% if risk_class == 1 %}
+            <p style="color: var(--text-main); font-size: 18px; line-height: 1.6;">Critical intervention parameters identified. Immediate clinical verification and potential escalation of care is strongly recommended.</p>
+            {% else %}
+            <p style="color: var(--text-main); font-size: 18px; line-height: 1.6;">Patient vital trajectory bounded within safe limits. Standard routine monitoring is advised at this time.</p>
+            {% endif %}
+
+            <div style="margin-top: 40px; text-align: left;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <span style="font-family: 'Rajdhani'; font-size: 20px; color: var(--teal-accent); text-transform: uppercase;">Confidence Probability</span>
+                    <span style="font-weight: 700; color: var(--text-main); font-size: 20px;">{{ probability }}%</span>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar {% if risk_class == 1 %}progress-high{% else %}progress-low{% endif %}" style="width: {{ probability }}%;"></div>
+                </div>
+            </div>
+
+            {% if top_features %}
+            <div class="feature-contributions fade-in-up" style="transition-delay: 0.2s;">
+                <h3 style="color: var(--teal-accent); font-family: 'Rajdhani'; font-size: 24px; border-bottom: 1px solid var(--border-glass); padding-bottom: 15px; margin-bottom: 10px; text-transform: uppercase;">Top Diagnostic Weights</h3>
+                <ul>
+                    {% for feature, importance in top_features %}
+                    <li>
+                        <strong style="color: var(--text-main); text-transform: uppercase; font-family: 'Rajdhani'; letter-spacing: 1px; font-size: 18px;">{{ feature.replace('_', ' ') }}</strong>
+                        <span style="color: var(--teal-accent); font-weight: 600; font-size: 18px;">{{ (importance * 100)|round(1) }}% INDX</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <div style="display: flex; gap: 15px; margin-top: 40px;">
+                <a href="/" class="cta-btn" style="flex: 1; text-align: center;">New Patient Scan →</a>
+                <a href="/dashboard" class="cta-btn btn-secondary" style="flex: 1; text-align: center; background: rgba(0, 212, 255, 0.1); border: 1px solid var(--teal-accent); color: var(--teal-accent);">View Clinical History</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer style="background: transparent; border-top: none; padding-bottom: 30px;">
+        <p>System Authorization: This Framework is deployed exclusively for Academic Data Theory analysis.</p>
+    </footer>
+
+    <script>
+        // Persistence Logic: Save current prediction to historical database
+        const saveToHistory = () => {
+            const history = JSON.parse(localStorage.getItem('cardio_history') || '[]');
+            const newRecord = {
+                id: 'P-' + Math.floor(1000 + Math.random() * 9000),
+                age: {{ age|default(0) }},
+                sex: "{{ 'Male' if sex == 1 else 'Female' }}",
+                ef: {{ ejection_fraction|default(0) }},
+                creatinine: {{ serum_creatinine|default(0) }},
+                score: Math.round({{ probability|default(0) }}),
+                prediction: "{{ 'HIGH RISK' if risk_class == 1 else 'LOW RISK' }}",
+                date: new Date().toLocaleDateString()
+            };
+            
+            // Add to the beginning of the array
+            history.unshift(newRecord);
+            // Keep only last 50 for demo performance
+            localStorage.setItem('cardio_history', JSON.stringify(history.slice(0, 50)));
+        };
+
+        window.onload = () => {
+            saveToHistory();
+            setTimeout(() => {
+                document.querySelectorAll('.fade-in-up').forEach(el => el.classList.add('visible'));
+            }, 100);
+        };
+    </script>
+</body>
+</html>

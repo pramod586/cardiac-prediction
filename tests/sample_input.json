@@ -1,0 +1,48 @@
+{
+  "test_cases": [
+    {
+      "description": "Low-Risk Patient (Stable Vitals)",
+      "data": {
+        "age": 45,
+        "anaemia": 0,
+        "creatinine_phosphokinase": 150,
+        "diabetes": 0,
+        "ejection_fraction": 65,
+        "high_blood_pressure": 0,
+        "platelets": 250000,
+        "serum_creatinine": 0.8,
+        "serum_sodium": 140,
+        "sex": 0,
+        "smoking": 0,
+        "time": 250
+      },
+      "expected_outcome": "LOW RISK (Green Card)"
+    },
+    {
+      "description": "High-Risk Patient (Failing Paramaters)",
+      "data": {
+        "age": 85,
+        "anaemia": 1,
+        "creatinine_phosphokinase": 500,
+        "diabetes": 1,
+        "ejection_fraction": 20,
+        "high_blood_pressure": 1,
+        "platelets": 150000,
+        "serum_creatinine": 2.5,
+        "serum_sodium": 125,
+        "sex": 1,
+        "smoking": 1,
+        "time": 10
+      },
+      "expected_outcome": "HIGH RISK (Red Card)"
+    },
+    {
+      "description": "Edge Case - Missing Crucial Info / Strings",
+      "data": {
+        "age": "Seventy",
+        "anaemia": 1
+      },
+      "expected_outcome": "Validation Error / Handled Exception without Server Crash"
+    }
+  ]
+}

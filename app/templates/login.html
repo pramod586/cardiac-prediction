@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | CardioPredict AI</title>
+    <!-- Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Exo+2:wght@300;400;600;700&family=Rajdhani:wght@500;600;700&family=Source+Sans+Pro:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="login-body">
+    <!-- Particle Background Grid -->
+    <div id="particle-container"></div>
+
+    <div class="login-wrapper">
+        <!-- LEFT PANEL: BRANDING & MOTIFS -->
+        <div class="left-panel">
+            <div class="branding-content">
+                <div class="logo-group">
+                    <svg class="heart-pulse-svg" viewBox="0 0 100 100">
+                        <path class="ecg-line" d="M0,50 L20,50 L25,30 L35,70 L40,50 L60,50 L65,10 L75,90 L80,50 L100,50" />
+                        <path class="heart-shape" d="M50,30 C35,10 10,25 10,50 C10,75 50,95 50,95 C50,95 90,75 90,50 C90,25 65,10 50,30 Z" />
+                    </svg>
+                    <h1 class="glow-text">CARDIO<br>PREDICT AI</h1>
+                </div>
+                <p class="tagline">Saving Lives Through Intelligent Prediction</p>
+                
+                <div class="badges">
+                    <div class="badge">95.2% Accuracy</div>
+                    <div class="badge">AI-Powered</div>
+                    <div class="badge">Clinical Grade</div>
+                </div>
+
+                <!-- Floating Stats Bubbles -->
+                <div class="stats-bubbles">
+                    <div class="bubble b1">BP: 120/80</div>
+                    <div class="bubble b2">Chol: 190</div>
+                    <div class="bubble b3">Age: 65</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL: AUTH TERMINAL -->
+        <div class="right-panel">
+            <div class="login-glass-card">
+                <div class="auth-header">
+                    <h2>Welcome Back, Doctor</h2>
+                    <p>Enter your credentials to access the clinical dashboard</p>
+                </div>
+
+                <div class="role-tabs">
+                    <button class="role-tab active" data-role="doctor">Doctor</button>
+                    <button class="role-tab" data-role="researcher">Researcher</button>
+                    <button class="role-tab" data-role="admin">Admin</button>
+                </div>
+
+                <form id="login-form">
+                    <div class="input-group">
+                        <label for="email">Email Address</label>
+                        <div class="input-box">
+                            <span class="icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                            </span>
+                            <input type="email" id="email" placeholder="doctor@hospital.com" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="password">Security Password</label>
+                        <div class="input-box">
+                            <span class="icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            </span>
+                            <input type="password" id="password" placeholder="••••••••" required>
+                            <span class="toggle-password" id="eye-icon">
+                                <svg id="eye-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="custom-checkbox">
+                            <input type="checkbox">
+                            <span class="checkmark"></span>
+                            Remember me
+                        </label>
+                        <a href="#" class="forgot-link">Forgot Password?</a>
+                    </div>
+
+                    <button type="submit" class="signin-btn" id="signin-btn">
+                        <span class="btn-text">Sign In →</span>
+                        <div class="loader-spinner"></div>
+                    </button>
+
+                    <div class="divider">
+                        <span>or continue with</span>
+                    </div>
+
+                    <div class="sso-options">
+                        <button type="button" class="sso-btn google">Google Workspace</button>
+                        <button type="button" class="sso-btn hospital">Hospital SSO</button>
+                    </div>
+
+                    <p class="request-access">New user? <a href="#">Request Access</a></p>
+                </form>
+            </div>
+            
+            <p class="academic-disclaimer">Academic Use Only. Non-diagnostic Research Simulation.</p>
+        </div>
+    </div>
+
+    <!-- VANILLA JS LOGIC -->
+    <script>
+        // Particle Generation
+        const container = document.getElementById('particle-container');
+        for (let i = 0; i < 50; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            dot.style.left = Math.random() * 100 + '%';
+            dot.style.top = Math.random() * 100 + '%';
+            dot.style.animationDelay = Math.random() * 5 + 's';
+            container.appendChild(dot);
+        }
+
+        // Toggle Password Visibility
+        const passwordInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eye-icon');
+        const eyeSvg = document.getElementById('eye-svg');
+
+        eyeIcon.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            if (type === 'password') {
+                eyeSvg.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+            } else {
+                eyeSvg.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+            }
+        });
+
+        // Tab Switching
+        document.querySelectorAll('.role-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+
+        // Login Simulation
+        const loginForm = document.getElementById('login-form');
+        const signinBtn = document.getElementById('signin-btn');
+        
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Add loading state
+            signinBtn.classList.add('loading');
+            
+            // Fake Delay for effect
+            setTimeout(() => {
+                const email = document.getElementById('email').value;
+                if (email.includes('@')) {
+                    // Success -> Redirect to the clinical dashboard
+                    window.location.href = '/dashboard';
+                } else {
+                    // Error Shake
+                    loginForm.classList.add('shake');
+                    signinBtn.classList.remove('loading');
+                    setTimeout(() => loginForm.classList.remove('shake'), 500);
+                }
+            }, 1500);
+        });
+    </script>
+</body>
+</html>

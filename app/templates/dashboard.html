@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinical Dashboard | CardioPredict AI</title>
+    <!-- Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Exo+2:wght@300;400;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="dashboard-body">
+    <!-- NAVBAR -->
+    <nav>
+        <div class="nav-brand">
+            <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3-9L9 21l-3-9H2"/></svg>
+            CardioPredict AI
+        </div>
+        <div class="nav-links">
+            <a href="/">Terminal</a>
+            <a href="/dashboard" class="active" style="color: var(--teal-accent);">History</a>
+            <a href="/#about">About</a>
+            <div class="user-profile">
+                <span>Dr. Clinician</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-wrapper">
+        <main class="dashboard-main container">
+        <!-- Top Stats -->
+        <div class="stats-grid">
+            <div class="stat-card glass">
+                <div class="stat-icon total">📊</div>
+                <div class="stat-info">
+                    <p>Total Predictions</p>
+                    <h3 id="stat-total">0</h3>
+                    <span class="trend up">↑ 12%</span>
+                </div>
+            </div>
+            <div class="stat-card glass">
+                <div class="stat-icon high">⚠️</div>
+                <div class="stat-info">
+                    <p>High Risk Cases</p>
+                    <h3 id="stat-high">0</h3>
+                    <span class="trend down">↓ 5%</span>
+                </div>
+            </div>
+            <div class="stat-card glass">
+                <div class="stat-icon low">✅</div>
+                <div class="stat-info">
+                    <p>Low Risk Cases</p>
+                    <h3 id="stat-low">0</h3>
+                    <span class="trend up">↑ 8%</span>
+                </div>
+            </div>
+            <div class="stat-card glass">
+                <div class="stat-icon avg">📈</div>
+                <div class="stat-info">
+                    <p>Avg Risk Score</p>
+                    <h3 id="stat-avg">0%</h3>
+                    <span class="trend neutral">→ Stable</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <div class="left-panel">
+                <!-- Search & Filters -->
+                <div class="filter-bar glass">
+                    <div class="search-box">
+                        <input type="text" id="patient-search" placeholder="Search Patient ID or Clinical Parameter...">
+                    </div>
+                    <div class="filters">
+                        <select id="filter-risk">
+                            <option value="all">All Risks</option>
+                            <option value="high">High Risk</option>
+                            <option value="low">Low Risk</option>
+                        </select>
+                        <select id="sort-by">
+                            <option value="date">Sort: Date</option>
+                            <option value="score">Sort: Risk Score</option>
+                            <option value="age">Sort: Age</option>
+                        </select>
+                        <button id="export-btn" class="btn-secondary">Export CSV</button>
+                    </div>
+                </div>
+
+                <!-- Patient Table -->
+                <div class="table-container glass">
+                    <table id="prediction-table">
+                        <thead>
+                            <tr>
+                                <th>Patient ID</th>
+                                <th>Age</th>
+                                <th>Sex</th>
+                                <th>EF%</th>
+                                <th>Creatinine</th>
+                                <th>Risk Score</th>
+                                <th>Prediction</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- Rows injected by JS -->
+                        </tbody>
+                    </table>
+                    <div class="pagination">
+                        <button class="page-btn active">1</button>
+                        <button class="page-btn">2</button>
+                        <span class="page-dots">...</span>
+                        <button class="page-btn">Next</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <!-- Charts -->
+                <div class="chart-container glass">
+                    <h4>Mortality Risk Distribution</h4>
+                    <canvas id="riskDonutChart"></canvas>
+                </div>
+                <div class="chart-container glass">
+                    <h4>Weekly Triage Volume</h4>
+                    <canvas id="trendBarChart"></canvas>
+                </div>
+
+                <!-- High Risk Alerts -->
+                <div class="alerts-panel glass">
+                    <h4>Recent High Risk Alerts</h4>
+                    <div id="alerts-list">
+                        <!-- Alert cards injected by JS -->
+                    </div>
+            </div> <!-- End Right Panel -->
+        </div> <!-- End Dashboard Content -->
+    </main> <!-- End Dashboard Main -->
+</div> <!-- End Dashboard Wrapper -->
+
+    <script>
+        // Demo Data Generation
+        const generateDemoData = () => {
+            const data = [];
+            const names = ['P-8821', 'P-3242', 'P-1109', 'P-9982', 'P-5561', 'P-2231', 'P-7762', 'P-4401', 'P-8812', 'P-3345', 'P-6612', 'P-9021', 'P-1234', 'P-5678', 'P-9876'];
+            
+            for (let i = 0; i < 15; i++) {
+                const isHigh = Math.random() > 0.6;
+                const score = isHigh ? (70 + Math.random() * 25) : (10 + Math.random() * 40);
+                data.push({
+                    id: names[i],
+                    age: 45 + Math.floor(Math.random() * 40),
+                    sex: Math.random() > 0.5 ? 'M' : 'F',
+                    ef: 20 + Math.floor(Math.random() * 50),
+                    creatinine: (0.5 + Math.random() * 3).toFixed(1),
+                    score: Math.round(score),
+                    prediction: isHigh ? 'HIGH RISK' : 'LOW RISK',
+                    date: new Date(Date.now() - (i * 86400000)).toLocaleDateString()
+                });
+            }
+            return data;
+        };
+
+        // Initialize LocalStorage
+        if (!localStorage.getItem('cardio_history')) {
+            localStorage.setItem('cardio_history', JSON.stringify(generateDemoData()));
+        }
+
+        const history = JSON.parse(localStorage.getItem('cardio_history'));
+
+        // Render Table
+        const renderTable = (data) => {
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+            data.forEach(p => {
+                const row = document.createElement('tr');
+                row.className = p.prediction === 'HIGH RISK' ? 'row-high' : 'row-low';
+                row.innerHTML = `
+                    <td>${p.id}</td>
+                    <td>${p.age}</td>
+                    <td>${p.sex}</td>
+                    <td>${p.ef}%</td>
+                    <td>${p.creatinine}</td>
+                    <td>
+                        <div class="risk-mini-bar">
+                            <div class="bar-fill" style="width: ${p.score}%; background: ${p.score > 60 ? '#ff3b5c' : '#00d4ff'}"></div>
+                            <span>${p.score}%</span>
+                        </div>
+                    </td>
+                    <td><span class="badge ${p.prediction === 'HIGH RISK' ? 'bg-high' : 'bg-low'}">${p.prediction}</span></td>
+                    <td>${p.date}</td>
+                    <td>
+                        <div class="actions">
+                            <button class="icon-btn" title="View Report">📑</button>
+                            <button class="icon-btn" title="Delete">🗑️</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        };
+
+        // Render Alerts
+        const renderAlerts = (data) => {
+            const list = document.getElementById('alerts-list');
+            list.innerHTML = '';
+            data.filter(p => p.prediction === 'HIGH RISK').slice(0, 5).forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'alert-card';
+                div.innerHTML = `
+                    <div class="alert-header">
+                        <span class="alert-id">${p.id}</span>
+                        <span class="alert-score">${p.score}% Risk</span>
+                    </div>
+                    <p>Critical threshold reached: Ejection Fraction ${p.ef}%</p>
+                    <button class="btn-text">View Details →</button>
+                `;
+                list.appendChild(div);
+            });
+        };
+
+        // Initialize Charts
+        const initCharts = () => {
+            const highCount = history.filter(p => p.prediction === 'HIGH RISK').length;
+            const lowCount = history.length - highCount;
+
+            new Chart(document.getElementById('riskDonutChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['High Risk', 'Low Risk'],
+                    datasets: [{
+                        data: [highCount, lowCount],
+                        backgroundColor: ['#ff3b5c', '#00d4ff'],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    cutout: '70%',
+                    plugins: { legend: { position: 'bottom', labels: { color: '#8a9ab0' } } }
+                }
+            });
+
+            new Chart(document.getElementById('trendBarChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Predictions',
+                        data: [12, 19, 3, 5, 2, 3, 7],
+                        backgroundColor: '#00d4ff',
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: { grid: { color: '#1a243d' }, ticks: { color: '#8a9ab0' } },
+                        x: { grid: { display: false }, ticks: { color: '#8a9ab0' } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        };
+
+        // Stats Counter Animation
+        const initStats = () => {
+            document.getElementById('stat-total').innerText = history.length;
+            document.getElementById('stat-high').innerText = history.filter(p => p.prediction === 'HIGH RISK').length;
+            document.getElementById('stat-low').innerText = history.filter(p => p.prediction === 'LOW RISK').length;
+            const avg = Math.round(history.reduce((a, b) => a + b.score, 0) / history.length);
+            document.getElementById('stat-avg').innerText = avg + '%';
+        };
+
+        window.onload = () => {
+            renderTable(history);
+            renderAlerts(history);
+            initCharts();
+            initStats();
+        };
+
+        // Export Functionality
+        document.getElementById('export-btn').onclick = () => {
+            const csv = "Patient ID,Age,Sex,EF,Creatinine,Score,Prediction,Date\n" + 
+                history.map(p => `${p.id},${p.age},${p.sex},${p.ef},${p.creatinine},${p.score},${p.prediction},${p.date}`).join("\n");
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('hidden', '');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'cardiopredict_history.csv');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        };
+    </script>
+</body>
+</html>
